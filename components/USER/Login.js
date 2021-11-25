@@ -65,7 +65,7 @@ const Login = props => {
           }
           //If token is not expired
           console.log("Token not expired");
-          //get token and user object
+          //get token and user object (parse object to JSON)
           userToken = await SecureStore.getItemAsync("userToken");
           user = JSON.parse(await SecureStore.getItemAsync("user"));
         } catch (e) {

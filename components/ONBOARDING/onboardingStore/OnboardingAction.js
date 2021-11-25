@@ -81,7 +81,7 @@ export const postUserToDb = (
     //get token to authenticate user
     const token = getState().user.token;
     const response = await fetch(`${dbEndpoint}users/${data.localId}.json?auth=${token}`, {
-      //Use PATCH to be able to make the user identifier the uuid from google authentication (hence connectiong the two also for deletion)
+      //Use PATCH to be able to make the user identifier the uuid from google authentication (insted of auto generated identifier) (hence connecting the two also for deletion)
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

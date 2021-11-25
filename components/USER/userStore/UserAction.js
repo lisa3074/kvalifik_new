@@ -14,10 +14,44 @@ const dbEndpoint = "https://kvalifik-bf2c3-default-rtdb.europe-west1.firebasedat
 const authEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:`;
 
 //refresh token and restore session
-export const restoreUser = (loggedInUser, token) => {
+export const restoreUser = (signedInUser, idToken) => {
   console.log("restoreUser() || UserAction.js");
-  //Send to reducer
-  return { type: LOGIN, payload: { loggedInUser, token } };
+  //use redux thunk to make asyncrounous calls
+  return async (dispatch) => {
+//Use the passed token for auth on the URL
+    const response = await fetch(`${dbEndpoint}users.json?auth=${idToken}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const users = await response.json();
+    //restore the user from db
+    let loggedInUser;
+    for (const key in users) {
+      //find the logged in user, and set the user object to send to the reducer    
+        if (users[key].id === signedInUser.id) {
+          console.log(users);
+          loggedInUser = new User(
+            users[key].id,
+            users[key].firstname,
+            users[key].lastname,
+            users[key].imageUrl,
+            users[key].email,
+            users[key].studyProgramme,
+            users[key].chatNotifications,
+            users[key].eventNotifications
+            );
+          }
+    }
+    if (!response.ok) {
+      console.error("ERROR in response (PostUserToDb) ", users);
+    } else {
+      console.log("response good (postUserToDb)");
+      //Make sure a dispacth is called, otherwise function won't work => send to reducer (use passed token as token)
+      dispatch({ type: LOGIN, payload: { loggedInUser, token: idToken} });
+    }
+  };
 };
 
 //delete user from google authentication
@@ -95,7 +129,7 @@ export const editNotifications = (chat, event, uuid, idToken, firstname, lastnam
       console.log("response good (editNotifications)");
       const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
       //set up secure store, only user
-      setSecureStore("edit", loggedInUser); //Turn secureStore on again
+     // setSecureStore("edit", loggedInUser); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_NOTIFICATIONS,
@@ -132,7 +166,7 @@ export const editUser = (firstname, lastname, studyProgramme, uuid, idToken, ema
       console.log("response good (editNotifications)");
       const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
       //Set up secureStore, only user
-      setSecureStore("edit", loggedInUser); //Turn secureStore on again
+     // setSecureStore("edit", loggedInUser); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_USER,
@@ -189,32 +223,33 @@ export const getUser = data => {
     const user = await response.json();
     let loggedInUser;
     for (const key in user) {
-      //find the logged in user, and set the user object to send to the reducer
-      if (user[key].id === data.localId) {
-        console.log(user);
-        loggedInUser = new User(
-          user[key].id,
-          user[key].firstname,
-          user[key].lastname,
-          user[key].imageUrl,
-          user[key].email,
-          user[key].studyProgramme,
-          user[key].chatNotifications,
-          user[key].eventNotifications
-        );
-      }
+      //find the logged in user, and set the user object to send to the reducer    
+        if (user[key].id === data.localId) {
+          console.log(user);
+          loggedInUser = new User(
+            user[key].id,
+            user[key].firstname,
+            user[key].lastname,
+            user[key].imageUrl,
+            user[key].email,
+            user[key].studyProgramme,
+            user[key].chatNotifications,
+            user[key].eventNotifications
+            );
+          }
     }
     if (!response.ok) {
       console.error("ERROR in response (PostUserToDb) ", response);
     } else {
       console.log("response good (postUserToDb)");
       //set up secure store, both data and user
-      setSecureStore(data, loggedInUser); //Turn secureStore on again
+      setSecureStore(data, loggedInUser.id); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({ type: LOGIN, payload: { loggedInUser, token: data.idToken } });
     }
   };
 };
+
 
 //Refresh token when expired if still logged in
 export const refreshToken = refreshToken => {
@@ -245,17 +280,13 @@ export const refreshToken = refreshToken => {
 //Add secureStore, so user is automatically logged in on refresh, unless they logged out
 export const setSecureStore = (data, user) => {
   console.log("setSecureStore() || UserAction.js");
-  //if edit is passed instead of an object, only set user (on edit notifications and edit profile)
-  if (data === "edit") {
-    SecureStore.setItemAsync("user", JSON.stringify(user));
-  } else {
-    SecureStore.setItemAsync("user", JSON.stringify(user));
+  //Set items in secure store
+    SecureStore.setItemAsync("user", user);
     SecureStore.setItemAsync("userToken", data.idToken);
     let expiration = new Date();
     expiration = expiration.setSeconds(expiration.getSeconds() + parseInt(data.expiresIn));
     SecureStore.setItemAsync("expiration", JSON.stringify(expiration));
     SecureStore.setItemAsync("refreshToken", data.refreshToken);
-  }
 };
 
 //Log out from google authentication
