@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Kvalifik_min_app-kopi",
+    "slug": "Kvalifik_min_app-kopi",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Kvalifik_min_app-kopi"
+}
