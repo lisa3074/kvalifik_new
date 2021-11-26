@@ -9,9 +9,9 @@ const [isChecked, setIsChecked] = useState(false);
 
       <Checkbox
         label={"String"} // name in the label
-        isChecked={isChecked} //state variable declared in parent component
-        setIsChecked={setIsChecked} //changing function declared in parent component
-        type={'check'} // check or switch
+        isChecked={isChecked} //string state variable declared in parent component
+        setIsChecked={setIsChecked} //updating function declared in parent component
+        type={'string'} // check or switch 
         error={"string"} // error message
       />
 */

@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 //APP COMPONENTS
 import { newChatRoom, deleteChatRoom } from "./chatStore/ChatAction";
 import MainScreenStyling from "../../styling/MainScreenStyling";
-import { round } from "react-native-reanimated";
 
 const AddChatRoom = props => {
   const dispatch = useDispatch();
