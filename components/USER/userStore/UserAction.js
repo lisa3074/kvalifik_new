@@ -17,9 +17,9 @@ const authEndpoint = `https://identitytoolkit.googleapis.com/v1/accounts:`;
 export const restoreUser = (signedInUser, idToken) => {
   console.log("restoreUser() || UserAction.js");
   //use redux thunk to make asyncrounous calls
-  return async (dispatch) => {
-//Use the passed token for auth on the URL
-    const response = await fetch(`${dbEndpoint}users.json?auth=${idToken}`, {
+  return async dispatch => {
+    //Use the passed token for auth on the URL
+    const response = await fetch(`${dbEndpoint}users/${signedInUser}.json?auth=${idToken}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,29 +27,22 @@ export const restoreUser = (signedInUser, idToken) => {
     });
     const users = await response.json();
     //restore the user from db
-    let loggedInUser;
-    for (const key in users) {
-      //find the logged in user, and set the user object to send to the reducer    
-        if (users[key].id === signedInUser.id) {
-          console.log(users);
-          loggedInUser = new User(
-            users[key].id,
-            users[key].firstname,
-            users[key].lastname,
-            users[key].imageUrl,
-            users[key].email,
-            users[key].studyProgramme,
-            users[key].chatNotifications,
-            users[key].eventNotifications
-            );
-          }
-    }
+      const loggedInUser = new User(
+      users.id,
+      users.firstname,
+      users.lastname,
+      users.imageUrl,
+      users.email,
+      users.studyProgramme,
+      users.chatNotifications,
+      users.eventNotifications
+    );
     if (!response.ok) {
       console.error("ERROR in response (PostUserToDb) ", users);
     } else {
       console.log("response good (postUserToDb)");
       //Make sure a dispacth is called, otherwise function won't work => send to reducer (use passed token as token)
-      dispatch({ type: LOGIN, payload: { loggedInUser, token: idToken} });
+      dispatch({ type: LOGIN, payload: { loggedInUser, token: idToken } });
     }
   };
 };
@@ -129,7 +122,7 @@ export const editNotifications = (chat, event, uuid, idToken, firstname, lastnam
       console.log("response good (editNotifications)");
       const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
       //set up secure store, only user
-     // setSecureStore("edit", loggedInUser); //Turn secureStore on again
+      // setSecureStore("edit", loggedInUser); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_NOTIFICATIONS,
@@ -166,7 +159,7 @@ export const editUser = (firstname, lastname, studyProgramme, uuid, idToken, ema
       console.log("response good (editNotifications)");
       const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
       //Set up secureStore, only user
-     // setSecureStore("edit", loggedInUser); //Turn secureStore on again
+      // setSecureStore("edit", loggedInUser); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_USER,
@@ -200,7 +193,10 @@ export const userLogin = (email, password) => {
     } else {
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       const loggedInUser = new User(data.localId, "", "", undefined, data.email);
+       console.log(loggedInUser)
       dispatch({ type: LOGIN, payload: { loggedInUser, token: data.idToken } });
+      //set up secure store, both data and user
+      setSecureStore(data, loggedInUser); //Turn secureStore on again
       //Get users to find the one logged in
       dispatch(getUser(data));
     }
@@ -209,47 +205,38 @@ export const userLogin = (email, password) => {
 
 //Get all users
 export const getUser = data => {
-  console.log("getUSer() || UserAction.js");
+  console.log("getUSer() || UserAction.js || ", data);
   //use redux thunk to make asyncrounous calls
   return async (dispatch, getState) => {
     //get token to authenticate the request
     const token = getState().user.token;
-    const response = await fetch(`${dbEndpoint}users.json?auth=${token}`, {
+    const response = await fetch(`${dbEndpoint}users/${data.localId}.json?auth=${token}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     });
     const user = await response.json();
-    let loggedInUser;
-    for (const key in user) {
-      //find the logged in user, and set the user object to send to the reducer    
-        if (user[key].id === data.localId) {
-          console.log(user);
-          loggedInUser = new User(
-            user[key].id,
-            user[key].firstname,
-            user[key].lastname,
-            user[key].imageUrl,
-            user[key].email,
-            user[key].studyProgramme,
-            user[key].chatNotifications,
-            user[key].eventNotifications
-            );
-          }
-    }
+    const loggedInUser = new User(
+      user.id,
+      user.firstname,
+      user.lastname,
+      user.imageUrl,
+      user.email,
+      user.studyProgramme,
+      user.chatNotifications,
+      user.eventNotifications
+    );
+  
     if (!response.ok) {
       console.error("ERROR in response (PostUserToDb) ", response);
     } else {
       console.log("response good (postUserToDb)");
-      //set up secure store, both data and user
-      setSecureStore(data, loggedInUser.id); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({ type: LOGIN, payload: { loggedInUser, token: data.idToken } });
     }
   };
 };
-
 
 //Refresh token when expired if still logged in
 export const refreshToken = refreshToken => {
@@ -281,12 +268,12 @@ export const refreshToken = refreshToken => {
 export const setSecureStore = (data, user) => {
   console.log("setSecureStore() || UserAction.js");
   //Set items in secure store
-    SecureStore.setItemAsync("user", user);
-    SecureStore.setItemAsync("userToken", data.idToken);
-    let expiration = new Date();
-    expiration = expiration.setSeconds(expiration.getSeconds() + parseInt(data.expiresIn));
-    SecureStore.setItemAsync("expiration", JSON.stringify(expiration));
-    SecureStore.setItemAsync("refreshToken", data.refreshToken);
+  SecureStore.setItemAsync("user", user.id);
+  SecureStore.setItemAsync("userToken", data.idToken);
+  let expiration = new Date();
+  expiration = expiration.setSeconds(expiration.getSeconds() + parseInt(data.expiresIn));
+  SecureStore.setItemAsync("expiration", JSON.stringify(expiration));
+  SecureStore.setItemAsync("refreshToken", data.refreshToken);
 };
 
 //Log out from google authentication

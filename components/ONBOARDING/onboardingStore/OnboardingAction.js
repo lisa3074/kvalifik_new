@@ -56,6 +56,8 @@ export const userSignup = (
       );
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({ type: SIGNUP, payload: { signedUpUser, token: data.idToken } });
+      //Setup secure store
+      setSecureStore(data, signedUpUser); //Turn secureStore on again
       //Create user in database
       dispatch(
         postUserToDb(data, firstname, lastname, imageUrl, studyProgramme, chatNotifications, eventNotifications)

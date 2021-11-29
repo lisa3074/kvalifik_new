@@ -49,8 +49,9 @@ const Login = props => {
     function isUserInSecureStore() {
     // Fetch the token from storage then navigate to our appropriate place
     const CheckToken = async () => {
-      isSignedIn = await SecureStore.getItemAsync("user");
+      let isSignedIn = await SecureStore.getItemAsync("user");
       if (isSignedIn) {
+        console.log(await SecureStore.getItemAsync("user"))
         let userToken, user, expiration, refreshTokenString;
         try {
           //find expiration date/time
@@ -67,7 +68,7 @@ const Login = props => {
           console.log("Token not expired");
           //get token and user object (parse object to JSON)
           userToken = await SecureStore.getItemAsync("userToken");
-          user = JSON.parse(await SecureStore.getItemAsync("user"));
+          user = await SecureStore.getItemAsync("user");
         } catch (e) {
           // Restoring token failed
           console.log("restore token failed");
