@@ -53,13 +53,9 @@ const Menu = props => {
   useEffect(() => {
     if (isChatChecked != undefined && isEventChecked != undefined) {
      
-      dispatch(editNotifications(isChatChecked, isEventChecked, loggedInUser.id, token, loggedInUser.firstname, loggedInUser.lastname, loggedInUser.studyProgramme, loggedInUser.email, loggedInUser.imageUrl));
+      dispatch(editNotifications(isChatChecked, isEventChecked, loggedInUser.id, token));
     }
   }, [isChatChecked, isEventChecked]);
-
-  /* const handleChange = () => {
-    console.log("handleChange")
-  } */
 
   return (
     <ScrollView>
@@ -83,13 +79,13 @@ const Menu = props => {
               <Text style={styles.heading}>Chat</Text>
               <Text style={MainScreenStyling.paragraphSmall}>When you recieve a new message</Text>
             </View>
-            {/* Reusable compoent */}
-            <CheckBox l
-              abel={""}
+            {/* Reusable component */}
+            <CheckBox
+              label={""}
               isChecked={isChatChecked}
               setIsChecked={setIsChatChecked}
               type={"switch"}
-              error={""} />
+              />
           </View>
           <View style={styles.notificationContainer}>
             <View>
@@ -102,7 +98,6 @@ const Menu = props => {
               isChecked={isEventChecked}
               setIsChecked={setIsEventChecked}
               type={"switch"}
-              error={""}
             />
           </View>
         </View>

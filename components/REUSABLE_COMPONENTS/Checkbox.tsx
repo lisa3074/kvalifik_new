@@ -12,7 +12,7 @@ const [isChecked, setIsChecked] = useState(false);
         isChecked={isChecked} //string state variable declared in parent component
         setIsChecked={setIsChecked} //updating function declared in parent component
         type={'string'} // check or switch 
-        error={"string"} // error message
+        error={"string"} // error message (this prop is optional)
       />
 */
 
@@ -21,7 +21,7 @@ interface Props {
   label: string;
   isChecked: boolean;
   type: string;
-  error: string;
+  error?: string;
   setIsChecked: (arg: boolean) => void;
 }
 
@@ -59,7 +59,7 @@ const Input = ({ label, isChecked, setIsChecked, type, error }: Props) => {
         <Text style={styles.labelStyle}>{label}</Text>
       </View>
       {/* Show only if not checked and touched and only if the error is not nothing */}
-      {!isChecked && isTouched && error != '' && <Text style={styles.error}>{error}</Text>}
+      {!isChecked && isTouched && error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/core";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 //APP COMPONENTS
 import { userSignup } from "../ONBOARDING/onboardingStore/OnboardingAction";
@@ -15,8 +15,9 @@ const Notification = props => {
   const dispatch = useDispatch();
 
   //Destructure props
-  const { signupEmail, signupPassword, isSignedin, firstname, lastname, imageUrl, studyProgramme } = props;
-
+  const { signupEmail, signupPassword, firstname, lastname, imageUrl, studyProgramme } = props;
+  const isSignedIn = useSelector(state => state.user.loggedInUser);
+  
   //Call userSignup (Redux action)
   const handleSignup = notifications => {
     dispatch(
@@ -35,8 +36,8 @@ const Notification = props => {
 
   //Don't navigate to start screen before making sure the user is logged in.
   useEffect(() => {
-    isSignedin && navigation.navigate(props.action);
-  }, [isSignedin]);
+    isSignedIn && navigation.navigate(props.action);
+  }, [isSignedIn]);
 
   return (
     <View style={styles.container}>

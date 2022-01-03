@@ -24,11 +24,11 @@ const StartNavigation = () => {
         <Stack.Navigator screenOptions={{
             headerShown: false
             }}>
-          <Stack.Screen name="Login" options={{ title: "Log in" }}>
-            {props => <Login screen={'Login'}  action={ 'Signup'}/>}
+          <Stack.Screen name="Login">
+            {props => <Login action={'Signup'} />}
         </Stack.Screen>
-          <Stack.Screen name="Signup" options={{ title: "Sign up" }}>
-            {props => <OnBoardingFlow isSignedIn={isSignedIn} screen={'Signup'}  action={'Login'} second_action={'VerifyEmail'}/>}
+          <Stack.Screen name="Signup">
+            {props => <OnBoardingFlow action={'Login'}/>}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

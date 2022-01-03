@@ -50,7 +50,7 @@ const ChatReducer = (state = initialState, action) => {
       const index = state.chatRooms.findIndex(room => room.chatRoomId === action.payload.chatRoomId);
       //Copy chatRoom, save as variable
       const chatroomArray = [...state.chatRooms];
-      //Replace the old chat room with the new
+      //Replace the old chat room with the new (replace 1 element at index with newChatRoom)
       chatroomArray.splice(index, 1, newChatRoom);
       return { ...state, chatRooms: chatroomArray };
     

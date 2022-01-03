@@ -13,29 +13,11 @@ const Stack = createNativeStackNavigator();
 
 //Set types on props passed from parent component
 interface Props{
-  isSignedIn: boolean;
   action: string;
-  second_action: string;
-  screen: string;
 }
 
 
-const OnBoardingFlow = ({ isSignedIn, action, second_action, screen }: Props) => {
-  //Set types on state variables
-  interface States {
-    signupEmail: string;
-    setSignupEmail: (arg: boolean) => void;
-    signupPassword: string;
-    setSignupPassword: (arg: boolean) => void;
-    firstname: string;
-    setFirstname: (arg: boolean) => void;
-    lastname: string;
-    setLastname: (arg: boolean) => void;
-    imageUrl: string;
-    setImageUrl: (arg: boolean) => void;
-    studyProgramme: string;
-    setStudyProgramme: (arg: boolean) => void;
-  }
+const OnBoardingFlow = ({action}: Props) => {
 
   //State variables (set in Signup and SetupProfile)
   const [signupEmail, setSignupEmail] = useState("");
@@ -89,7 +71,6 @@ const OnBoardingFlow = ({ isSignedIn, action, second_action, screen }: Props) =>
       <Stack.Screen name="Notifications" options={{ title: "Notifications" }}>
         {props => (
           <Notifications
-            isSignedIn={isSignedIn}
             signupEmail={signupEmail}
             signupPassword={signupPassword}
             firstname={firstname}

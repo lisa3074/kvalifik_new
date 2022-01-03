@@ -51,7 +51,6 @@ const Login = props => {
     const CheckToken = async () => {
       let isSignedIn = await SecureStore.getItemAsync("user");
       if (isSignedIn) {
-        console.log(await SecureStore.getItemAsync("user"))
         let userToken, user, expiration, refreshTokenString;
         try {
           //find expiration date/time

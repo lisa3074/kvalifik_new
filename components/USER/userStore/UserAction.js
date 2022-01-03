@@ -97,7 +97,7 @@ export const deleteUserInDb = uuid => {
 };
 
 //Update notification preferences
-export const editNotifications = (chat, event, uuid, idToken, firstname, lastname, studyProgramme, email, imageUrl) => {
+export const editNotifications = (chat, event, uuid, idToken) => {
   console.log("editNotifications() || UserAction.js");
   //use redux thunk to make asyncrounous calls
   return async (dispatch, getState) => {
@@ -120,9 +120,6 @@ export const editNotifications = (chat, event, uuid, idToken, firstname, lastnam
       console.error("ERROR in response (editNotifications) ", response);
     } else {
       console.log("response good (editNotifications)");
-      const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
-      //set up secure store, only user
-      // setSecureStore("edit", loggedInUser); //Turn secureStore on again
       //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_NOTIFICATIONS,
@@ -133,7 +130,7 @@ export const editNotifications = (chat, event, uuid, idToken, firstname, lastnam
 };
 
 //Update user
-export const editUser = (firstname, lastname, studyProgramme, uuid, idToken, email, imageUrl, chat, event) => {
+export const editUser = (firstname, lastname, studyProgramme, uuid, idToken) => {
   console.log("editUser() || UserAction.js");
   //use redux thunk to make asyncrounous calls
   return async (dispatch, getState) => {
@@ -157,10 +154,6 @@ export const editUser = (firstname, lastname, studyProgramme, uuid, idToken, ema
       console.error("ERROR in response (editNotifications) ", response);
     } else {
       console.log("response good (editNotifications)");
-      const loggedInUser = new User(uuid, firstname, lastname, imageUrl, email, studyProgramme, chat, event);
-      //Set up secureStore, only user
-      // setSecureStore("edit", loggedInUser); //Turn secureStore on again
-      //Make sure a dispacth is called, otherwise function won't work => send to reducer
       dispatch({
         type: UPDATE_USER,
         payload: { firstname: firstname, lastname: lastname, studyProgramme: studyProgramme, token: idToken },

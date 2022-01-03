@@ -52,7 +52,7 @@ const EditProfile = props => {
 
   //Call editUser (redux acition) and navigate to profile
   const HandleSave = () => {
-    dispatch(editUser(firstName, lastName, programme, loggedInUser.id, token, loggedInUser.email, loggedInUser.imageUrl, loggedInUser.chatNotifications, loggedInUser.eventNotifications));
+    dispatch(editUser(firstName, lastName, programme, loggedInUser.id, token));
     navigation.navigate(props.action);
   };
 
